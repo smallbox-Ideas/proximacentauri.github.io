@@ -130,13 +130,24 @@
         <h1>Cricket Score Portal</h1>
         <p>Live scores, match statistics, and player records from the Home of Cricket - Lord's Stadium</p>
         <div class="buttons">
-            <button class="btn btn-primary">Live Scores</button>
-            <button class="btn btn-secondary">Match Archive</button>
+            <button class="btn btn-primary" onclick="window.location.href='live-scores.html'">Live Scores</button>
+            <button class="btn btn-secondary" onclick="window.location.href='archive.html'">Match Archive</button>
         </div>
     </div>
     
     <footer>
         <div class="footer-text">In collaboration with SRC</div>
     </footer>
+
+    <script>
+        // Alternative JavaScript redirection method
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            window.location.href = 'portal.html';
+        });
+        
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            window.location.href = 'history.html';
+        });
+    </script>
 </body>
 </html>
