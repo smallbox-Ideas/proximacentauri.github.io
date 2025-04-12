@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Match History</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1a2a6c;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .match-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .match-title {
+            font-size: 1.5rem;
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 5px;
+        }
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .match-result {
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: rgba(40, 167, 69, 0.1);
+            border-radius: 5px;
+        }
+        .match-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #b21f1f;
+        }
+        .no-matches {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.2rem;
+            margin-top: 50px;
+        }
+        .match-details {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .innings-info {
+            margin-bottom: 10px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cricket Match History</h1>
+        <div id="matches-container">
+            <!-- Matches will be loaded here -->
+        </div>
+        <div class="btn-container">
+            <a href="index.html" class="btn"><i class="fas fa-plus"></i> Start New Match</a>
+            <button id="clear-history" class="btn btn-secondary"><i class="fas fa-trash"></i> Clear History</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const matchesContainer = document.getElementById('matches-container');
+            const clearHistoryBtn = document.getElementById('clear-history');
+            
+            // Load matches from localStorage
+            loadMatches();
+            
+            // Clear history button
+            clearHistoryBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all match history?')) {
+                    localStorage.removeItem('cricketMatches');
+                    matchesContainer.innerHTML = `
+                        <div class="no-matches">
+                            <p>No matches found in history.</p>
+                            <p>Start a new match to see it here!</p>
+                        </div>
+                    `;
+                }
+            });
+            
+            function loadMatches() {
+                const savedMatches = JSON.parse(localStorage.getItem('cricketMatches')) || [];
+
+                if (savedMatches.length === 0) {
+                    matchesContainer.innerHTML = `
+                        <div class="no-matches">
+                            <p>No matches found in history.</p>
+                            <p>Start a new match to see it here!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display matches in reverse chronological order
+                savedMatches.reverse().forEach((match, index) => {
+                    const matchCard = document.createElement('div');
+                    matchCard.className = 'match-card';
+                    
+                    let innings1Info = '';
+                    let innings2Info = '';
+                    
+                    if (match.innings1) {
+                        innings1Info = `
+                            <div class="innings-info">
+                                <strong>${match.innings1.team}:</strong> ${match.innings1.score}/${match.innings1.wickets} (${match.innings1.overs} ov)
+                            </div>
+                        `;
+                    }
+                    
+                    if (match.innings2) {
+                        innings2Info = `
+                            <div class="innings-info">
+                                <strong>${match.innings2.team}:</strong> ${match.innings2.score}/${match.innings2.wickets} (${match.innings2.overs} ov)
+                            </div>
+                        `;
+                    }
+                    
+                    matchCard.innerHTML = `
+                        <div class="match-title">${match.title || 'Untitled Match'}</div>
+                        <div class="match-teams">
+                            <span>${match.team1.name}</span>
+                            <span>vs</span>
+                            <span>${match.team2.name}</span>
+                        </div>
+                        <div class="match-result">${match.result || "Match in progress"}</div>
+                        <div class="match-details">
+                            ${innings1Info}
+                            ${innings2Info}
+                            <div class="match-date">${new Date(match.timestamp).toLocaleString()}</div>
+                        </div>
+                    `;
+                    
+                    matchesContainer.appendChild(matchCard);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Style Loader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cricket-ball {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #fdbb2d, #e6a800);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(253, 187, 45, 0.6);
+            animation: bounce 1.5s infinite alternate;
+            z-index: 10;
+        }
+
+        .cricket-ball::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 45%, #1a2a6c 45%, #1a2a6c 55%, transparent 55%);
+            border-radius: 50%;
+        }
+
+        .cricket-ball::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 45%, #1a2a6c 45%, #1a2a6c 55%, transparent 55%);
+            border-radius: 50%;
+        }
+
+        .stadium {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+        }
+
+        .stadium::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .stadium::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .players {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+
+        .loading-text {
+            margin-top: 40px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .progress-bar {
+            width: 80%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #fdbb2d, #ffffff);
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #fdbb2d;
+            opacity: 0;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-50px) rotate(360deg);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .loader-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .cricket-ball {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .stadium {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .loading-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="stadium"></div>
+        <div class="cricket-ball"></div>
+        <div class="loading-text">Loading Match...</div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create player dots
+        function createPlayers() {
+            const loaderContainer = document.querySelector('.loader-container');
+            const radius = 120;
+            const playerCount = 11;
+            
+            for (let i = 0; i < playerCount; i++) {
+                const player = document.createElement('div');
+                player.className = 'players';
+                
+                // Position players in a circle
+                const angle = (i * (360 / playerCount)) * (Math.PI / 180);
+                const x = radius * Math.cos(angle);
+                const y = radius * Math.sin(angle);
+                
+                player.style.left = `calc(50% + ${x}px)`;
+                player.style.top = `calc(50% + ${y}px)`;
+                player.style.transform = 'translate(-50%, -50%)';
+                
+                // Random size and animation delay
+                const size = 10 + Math.random() * 10;
+                player.style.width = `${size}px`;
+                player.style.height = `${size}px`;
+                player.style.animationDelay = `${i * 0.1}s`;
+                
+                loaderContainer.appendChild(player);
+            }
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#fdbb2d', '#1a2a6c', '#b21f1f', '#ffffff'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+                
+                // Random size
+                const size = 5 + Math.random() * 10;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Animate confetti
+                const angle = Math.random() * Math.PI * 2;
+                let posX = parseFloat(confetti.style.left);
+                let posY = parseFloat(confetti.style.top) - 100;
+                let opacity = 0;
+                let rotation = 0;
+                const rotationSpeed = (Math.random() - 0.5) * 20;
+                
+                const interval = setInterval(() => {
+                    posX += Math.cos(angle) * 0.5;
+                    posY += Math.sin(angle) * 0.5 + 0.7;
+                    rotation += rotationSpeed;
+                    
+                    if (opacity < 1) opacity += 0.02;
+                    
+                    confetti.style.left = `${posX}%`;
+                    confetti.style.top = `${posY}%`;
+                    confetti.style.transform = `rotate(${rotation}deg)`;
+                    confetti.style.opacity = opacity;
+                    
+                    if (posY > 100) {
+                        clearInterval(interval);
+                        document.body.removeChild(confetti);
+                    }
+                }, 50);
+            }
+        }
+
+        // Initialize loader
+        document.addEventListener('DOMContentLoaded', function() {
+            createPlayers();
+            
+            // Create confetti periodically
+            setInterval(createConfetti, 1500);
+            
+            // Change loading text periodically
+            const loadingTexts = [
+                "Preparing Pitch...",
+                "Warming Up Players...",
+                "Setting Field...",
+                "Almost Ready...",
+                "Starting Match..."
+            ];
+            
+            let currentText = 0;
+            const textElement = document.querySelector('.loading-text');
+            
+            setInterval(() => {
+                currentText = (currentText + 1) % loadingTexts.length;
+                textElement.textContent = loadingTexts[currentText];
+            }, 1400); // Changed to 1.4s to match 7 second total
+            
+            // Progress bar animation
+            const progressBar = document.getElementById('progress');
+            const duration = 7000; // 7 seconds
+            const intervalTime = 50;
+            const increment = (intervalTime / duration) * 100;
+            let progress = 0;
+            
+            const progressInterval = setInterval(() => {
+                progress += increment;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, intervalTime);
+            
+            // Redirect after 7 seconds
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 7000);
+        });
+    </script>
+</body>
+</html>
